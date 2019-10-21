@@ -2,6 +2,9 @@ import React from "react";
 
 import TimeboxCreator from "./TimeboxCreator";
 import Timebox from "./Timebox";
+import ErrorBoundry from "./ErrorBoundry";
+
+
 
 class TimeboxList extends React.Component {
     state = {
@@ -9,11 +12,15 @@ class TimeboxList extends React.Component {
             { id: "a", title: "Uczę się formularzy", totalTimeInMinutes: 15 },
             { id: "b", title: "Uczę się list", totalTimeInMinutes: 25 },
             { id: "c", title: "Uczę się komponentów niekontrolowanych", totalTimeInMinutes: 5 },
-        ]
-
+        ],
+        hasError: false
     }
 
+    
+
+
     addTimebox = (timebox) => {
+        throw new Error("Nie udało sie utworzyć Timeboxa")
         this.setState(prevState => {
             const timeboxes = [timebox, ...prevState.timeboxes,];
             return { timeboxes };
@@ -36,14 +43,24 @@ class TimeboxList extends React.Component {
         })
     }
     handleCreate = (createdTimebox) => {
-        this.addTimebox(createdTimebox);
+        try {
+            this.addTimebox(createdTimebox);
+        } catch (error) {
+            console.log("Jest błąd przy tworzeniu timeboxa:", error)
+            // this.setState(hasError: true)
+        }
+        
     }
 
     render() {
         return (
             <>
                 <TimeboxCreator onCreate={this.handleCreate} />
-                {this.state.timeboxes.map((timebox, index) => (
+                <ErrorBoundry message="Coś się wykrzaczyło :(">
+                {
+                   
+                    this.state.timeboxes.map((timebox, index) => (
+                       
                     <Timebox
                         key={timebox.id}
                         title={timebox.title}
@@ -51,9 +68,11 @@ class TimeboxList extends React.Component {
                         onDelete={() => this.removeTimebox(index)}
                         onEdit={() => this.updateTimebox(index, { ...timebox, title: " Updated timebox" })}
                     />
+                    
                 ))}
 
 
+                </ErrorBoundry>
             </>
         )
     }

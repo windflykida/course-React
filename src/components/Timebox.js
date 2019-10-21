@@ -2,7 +2,9 @@ import React from "react";
 
 
 function Timebox({ title, totalTimeInMinutes, onDelete, onEdit }) {
-
+    if (totalTimeInMinutes <= 0){
+        throw new Error("Time mut be greater than zero")
+}
     return (
         <div className="Timebox">
             <h3>{title} - {totalTimeInMinutes} min.</h3>
